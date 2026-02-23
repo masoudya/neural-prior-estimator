@@ -28,10 +28,6 @@ the result can be visualized by
 ```bash
 python report.py logs/result/<experiment_name>.npy --visualize-train --visualize-test
 ```
-## Datasets
-
-The framework is compatible with [cifar10](https://www.cs.toronto.edu/~kriz/cifar.html), [cifar100](https://www.cs.toronto.edu/~kriz/cifar.html), [iNaturalist 2018](https://github.com/visipedia/inat_comp/blob/master/2018/README.md),
-[Places](http://places.csail.mit.edu/) and [ImageNet](https://www.image-net.org/) datasets.
 
 ## Configuration System
 
@@ -106,6 +102,42 @@ All configuration values are stored in a unified configuration object with attri
 + config.batch_size
 + config.num_pem
 
+## Datasets
+
+The framework is compatible with [cifar10](https://www.cs.toronto.edu/~kriz/cifar.html), [cifar100](https://www.cs.toronto.edu/~kriz/cifar.html), [iNaturalist 2018](https://github.com/visipedia/inat_comp/blob/master/2018/README.md),
+[Places](http://places.csail.mit.edu/) and [ImageNet](https://www.image-net.org/) datasets.
+
+By default, datasets are expected at: `classification/data/`
+
+The dataset path is controlled by the configuration parameter:
+
+```yaml
+
+data_path: ./data/<dataset_name>
+```
+
+### Expected Directory Structure
+
+Example for CIFAR datasets:
+
+```text
+classification/
+└── data/
+    ├── cifar10/
+    └── cifar100/
+```
+
+The directory name must match the value specified in the configuration file.
+
+### Changing Dataset Location
+
+To use a different dataset path, modify the configuration file: `data_path: /path/to/your/dataset`
+
+Or override from command line:
+```bash
+python train.py --dataset cifar10 --cfg-options data_path=/path/to/data
+```
+
 ## Logs & Reporting
 
 During training, NPE saves experiment logs as a NumPy file in the default directory:
@@ -168,4 +200,5 @@ Available plots include:
 - Final group accuracy comparison (Head / Medium / Tail)
 
 These visualizations help assess convergence and long-tailed performance behavior.
+
 

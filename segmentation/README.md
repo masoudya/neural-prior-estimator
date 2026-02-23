@@ -34,21 +34,20 @@ workspace/
     ├── segmentation/
     └── ...
 ```
-
+This layout is required because the segmentation pipeline imports MMSegmentation modules.
 ## Dataset Preparation
+Dataset format and structure follow,
+[MMSegmentation conventions](https://github.com/open-mmlab/mmsegmentation/blob/main/docs/en/user_guides/2_dataset_prepare.md#prepare-datasets)
+but the storage location is `neural-prior-estimator/segmentation/data/`. ⚠️ DO NOT place dataset in `mmsegmentation/data`. 
 
-Datasets must be placed inside: `segmentation/data/`
-
-Dataset preparation follows the same structure and conventions as MMSegmentation. 
-Refer to the official [dataset preparation](https://github.com/open-mmlab/mmsegmentation/blob/main/docs/en/user_guides/2_dataset_prepare.md#prepare-datasets)
-guide.
 ```text
 segmentation/
 │
-├── data/ # dataset directory (MMSegmentation format)
-├── npe/ # NPE modules and wrappers
-├── tools/ # training and evaluation scripts
+├── data/ 
+├── npe/ 
+├── tools/
 │ ├── train.py
 │ └── test.py
 └── README.md
 ```
+

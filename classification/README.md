@@ -19,18 +19,19 @@ The implementation integrates learned feature-conditioned priors into prediction
    ```
 ## Quick Start
 
-for training cifar10 dataset, with one _Prior Estimator Module (PEM)_, and default configuration, run:
+To traine on cifar-10 using one Prior Estimation Module (PEM) with default settings:
 
 ```bash
 python train.py --dataset cifar10 --num-pem 1
 ```
 the result can be visualized by
 ```bash
-python report.py logs/result/<expriment_name>.npy --visualize-train
+python report.py logs/result/<experiment_name>.npy --visualize-train --visualize-test
 ```
 ## Datasets
-Supported datasets are [cifar10](https://www.cs.toronto.edu/~kriz/cifar.html), [cifar100](https://www.cs.toronto.edu/~kriz/cifar.html), [iNaturalist 2018](https://github.com/visipedia/inat_comp/blob/master/2018/README.md),
-[Places](http://places.csail.mit.edu/) and [ImageNet](https://www.image-net.org/).
+
+The framework is compatible with [cifar10](https://www.cs.toronto.edu/~kriz/cifar.html), [cifar100](https://www.cs.toronto.edu/~kriz/cifar.html), [iNaturalist 2018](https://github.com/visipedia/inat_comp/blob/master/2018/README.md),
+[Places](http://places.csail.mit.edu/) and [ImageNet](https://www.image-net.org/) datasets.
 
 ## Configuration System
 
@@ -46,7 +47,7 @@ At runtime, parameters are resolved in the following order:
 `config/base/dist_train.yaml` controls device configuration.
 2. **Dataset-specific configuration**:
 `config/<dataset>/<dataset>.yaml`
-which controls mainly hyperparameters. <dataset> is automatically selected when `--dataset` is provided.
+which defines dataset-specific settings and training hyperparameters. <dataset> is automatically selected when `--dataset` is provided.
 
 3. **Command-line arguments**:
 Override individual parameters such as learning rate or number of PEM modules.
@@ -65,17 +66,18 @@ Each dataset configuration file defines dataset settings, model parameters, and 
 Common training parameters can be overridden without modifying YAML files.
 
 Available override arguments are:
-| Argument |	Description |
-| :---         |     :---      |
-| --dataset |	Dataset name    |
-| --lr |	Learning rate     |
-| --batch-size |	Batch size  |
-|--num-epochs |	Number of training epochs     |
-| --imb-factor |	Imbalance factor   |
-| --weight-decay	| Weight decay      |
-| --num-pem |	Number of Prior Estimation Modules  |
-| --loss-function	| Loss type ( CE or LA)     |
-| --save-checkpoint |	Save trained model    |
+
+| Argument | Description |
+|---|---|
+| `--dataset` | Dataset name |
+| `--lr` | Learning rate |
+| `--batch-size` | Batch size |
+| `--num-epochs` | Number of training epochs |
+| `--imb-factor` | Imbalance factor |
+| `--weight-decay` | Weight decay |
+| `--num-pem` | Number of Prior Estimation Modules |
+| `--loss-function` | Loss type (CE or LA) |
+| `--save-checkpoint` | Save trained model |
 
 Example:
 ```bash
@@ -128,7 +130,7 @@ The `.npy` file stores a dictionary with the following keys:
 | `per_class_accs` | Array of per-class accuracies for each epoch `[num_epochs, num_classes]` |
 | `config` | Dictionary of all config parameters used in the run |
 
-This structure allows easy flexible post-hoc analysis.
+The logging format is designed to support long-tailed evaluation metrics used in the NPE paper, including per-class and group-wise accuracy analysis.
 
 ### Report Generation
 
@@ -157,6 +159,13 @@ The log tracks per-class accuracy. For long-tailed analysis, classes are grouped
 Group accuracy is computed as the average of per-class accuracies in each group at the final epoch.
 Visualization
 
+### Visualization
 
+Available plots include:
 
-These visualizations help quickly assess model performance and imbalance handling.
+- Training loss curve
+- Validation accuracy curve
+- Final group accuracy comparison (Head / Medium / Tail)
+
+These visualizations help assess convergence and long-tailed performance behavior.
+

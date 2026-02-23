@@ -11,13 +11,13 @@ A preprint of the paper is available on [_Arxiv_](https://arxiv.org/abs/2602.178
 
 ## Long-tailed Classification
 
-- Directory: [`classification/`](https://github.com/masoudya/neural-prior-estimator/classification)
+- Directory: [`classification/`](https://github.com/masoudya/neural-prior-estimator/tree/main/classification)
 
-- Instructions: See [`classification/README.md`](https://github.com/masoudya/neural-prior-estimator/blob/main/classification/README.md) for installation, training, and evaluation.
+- Instructions: See [`classification/README.md`](https://github.com/masoudya/neural-prior-estimator/blob/main/classification/README.md) for installation and training evaluation.
 
 
 ## Imbalanced Semantic Segmentation
 
-- Directory: `segmentation/`
+- Directory: [`segmentation/](https://github.com/masoudya/neural-prior-estimator/tree/main/segmentation)
 
-- Instructions: See `segmentation/README.md` for installation, training, and evaluation
+- Instructions: See [`segmentation/README.md`]([`classification/README.md`](https://github.com/masoudya/neural-prior-estimator/blob/main/segmentation/README.md)) for installation, training, and evaluation

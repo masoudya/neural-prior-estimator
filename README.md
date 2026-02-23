@@ -18,6 +18,6 @@ A preprint of the paper is available on [_Arxiv_](https://arxiv.org/abs/2602.178
 
 ## Imbalanced Semantic Segmentation
 
-- Directory: [`segmentation/](https://github.com/masoudya/neural-prior-estimator/tree/main/segmentation)
+- Directory: [`segmentation/`](https://github.com/masoudya/neural-prior-estimator/tree/main/segmentation)
 
 - Instructions: See [`segmentation/README.md`]([`classification/README.md`](https://github.com/masoudya/neural-prior-estimator/blob/main/segmentation/README.md)) for installation, training, and evaluation

@@ -87,3 +87,76 @@ python train.py \
     --num-pem 2 \
     --save-checkpoint
 ```
+
+For advanced usage, arbitrary parameters can be overridden using key-value syntax.
+
+Example:
+```bash
+python train.py \
+    --dataset cifar10 \
+    --cfg-options lr=0.01 batch_size=64 momentum=0.95
+```
+
+### Configuration Object
+All configuration values are stored in a unified configuration object with attribute-style access. For example:
+
++ config.lr
++ config.batch_size
++ config.num_pem
+
+## Logs & Reporting
+
+During training, NPE saves experiment logs as a NumPy file in the default directory:
+`logs/result/`
+
+Each run is assigned a unique timestamp:
+`logs/result/run_<YYYY-MM-DD_HH-MM-SS>.npy`
+
+### Log File Contents
+
+The `.npy` file stores a dictionary with the following keys:
+
+| Key | Description |
+|-----|------------|
+| `timestamp` | Run timestamp for reproducibility |
+| `backbone_path` | Path to backbone checkpoint (if any) |
+| `block_path` | Path to additional model blocks (if any) |
+| `train_losses` | Array of training loss per epoch |
+| `pem_losses` | Array of PEM module loss per epoch |
+| `val_losses` | Array of validation loss per epoch |
+| `val_accs` | Array of validation accuracy per epoch |
+| `per_class_accs` | Array of per-class accuracies for each epoch `[num_epochs, num_classes]` |
+| `config` | Dictionary of all config parameters used in the run |
+
+This structure allows easy flexible post-hoc analysis.
+
+### Report Generation
+
+Use `report.py` to summarize results and optionally visualize training and validation curves.
+
+```bash
+python report.py <path_to_log.npy> [--visualize-train] [--visualize-test]
+```
+#### Arguments
+
+- `<path_to_log.npy>`:	Path to the .npy log file generated during training
+- `--visualize-train`:	Plot training loss curve
+- `--visualize-test`:	Plot validation accuracy and final group accuracies
+
+Example:
+```bash
+python report.py logs/result/run_2026-02-23_12-00-00.npy --visualize-train --visualize-test
+```
+
+The log tracks per-class accuracy. For long-tailed analysis, classes are grouped as:
+
+   - Head classes → head_class_idx from config
+   - Medium classes → med_class_idx from config
+   - Tail classes → tail_class_idx from config
+
+Group accuracy is computed as the average of per-class accuracies in each group at the final epoch.
+Visualization
+
+
+
+These visualizations help quickly assess model performance and imbalance handling.

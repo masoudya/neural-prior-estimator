@@ -1,0 +1,32 @@
+name: imagenet
+print_freq: 100
+workers: 48
+log_dir: 'logs'
+
+# dataset & model setting
+dataset: 'imagenet'
+data_path: './data/ImageNet/'
+num_classes: 1000
+imb_factor: null
+backbone: 'resnet50'
+resume: ''
+head_class_idx:
+  - 0
+  - 390
+med_class_idx:
+  - 390
+  - 835
+tail_class_idx:
+  - 835
+  - 1000
+
+# Train
+lr: 0.1
+batch_size: 256
+weight_decay: 5e-4
+num_epochs: 180
+momentum: 0.9
+
+# scheduler - sch_mode can be cosine or multistep
+
+sch_mode: cosine

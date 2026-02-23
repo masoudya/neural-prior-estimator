@@ -1,0 +1,38 @@
+name: cifar10
+print_freq: 10
+workers: 16
+log_dir: 'logs'
+
+
+# dataset & model setting
+dataset: 'cifar10'
+data_path: './data/cifar10'
+num_classes: 10
+imb_factor: 100
+imb_type: 'exp'
+backbone: 'resnet32'
+resume: ''
+head_class_idx:
+  - 0
+  - 3
+med_class_idx:
+  - 3
+  - 7
+tail_class_idx:
+  - 7
+  - 10
+
+# Train
+lr: 0.1
+batch_size: 128
+weight_decay: 2e-4
+num_epochs: 200
+momentum: 0.9
+
+# scheduler - sch_mode can be cosine or multistep
+
+sch_mode: multistep
+milestone:
+    - 160
+    - 180
+decay: 0.1

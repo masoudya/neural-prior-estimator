@@ -1,0 +1,33 @@
+name: ina2018
+print_freq: 200
+workers: 48
+log_dir: 'logs'
+
+# dataset & model setting
+dataset: 'ina2018'
+data_path: './data/iNaturalist2018'
+num_classes: 8142
+imb_factor: null
+backbone: 'resnet50'
+resume: ''
+head_class_idx:
+  - 0
+  - 842
+med_class_idx:
+  - 842
+  - 4543
+tail_class_idx:
+  - 4543
+  - 8142
+
+
+# Train
+lr: 0.1
+batch_size: 256
+weight_decay: 1e-4
+num_epochs: 200
+momentum: 0.9
+
+# scheduler - sch_mode can be cosine or multistep
+
+sch_mode: cosine

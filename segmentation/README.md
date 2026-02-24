@@ -207,11 +207,10 @@ python tools/test.py work_dirs/unet_npe
 
 #### Test-Time Scaling
 
-#### Test-Time Scaling
-
 The `--scale-factor` argument overrides the scaling parameter of the NPE `MultiHeadWrapper` during evaluation.
 
 - Larger values of `--scale-factor` **reduce the effect** of the effect of logit adjusment effect.
 - This allows controlled analysis of adjustment strength without retraining.
 
 ```
+

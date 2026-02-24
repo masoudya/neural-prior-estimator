@@ -1,8 +1,8 @@
 # Semantic Segmentation with Neural Prior Estimator (NPE)
 
-This directory contains the semantic segmentation implementation of **Neural Prior Estimator (NPE)** built on top of MMSegmentation.
-
-The method integrates learned feature-conditioned priors into dense prediction, enabling imbalance-aware semantic segmentation.
+This directory provides the semantic segmentation implementation of **Neural Prior Estimator (NPE)** built on top of MMSegmentation.
+NPE augments dense prediction models with learnable feature-conditioned class priors that adjust segmentation logits, improving performance under class imbalance.
+The implementation does not modify base model definitions. Instead, it wraps existing decode heads at runtime and injects prior estimation modules.
 
 
 ## Installation
@@ -14,7 +14,7 @@ This implementation depends on MMSegmentation.
 Follow the official mmsegmentation [installation guide](https://github.com/open-mmlab/mmsegmentation/blob/main/docs/en/get_started.md#installation). 
 Make sure MMSegmentation runs correctly before proceeding.
 
-**Step 2:** Clone Neural Prior Estimator repository
+**Step 2:** Clone Neural Prior Estimator
 
 ```bash
 git clone https://github.com/masoudya/neural-prior-estimator.git
@@ -48,7 +48,7 @@ but the storage location is `neural-prior-estimator/segmentation/data/`. ⚠️ 
 
 ## Training
 
-Training is performed using a standard MMSegmentation base configuration with NPE modifications applied at runtime.
+Training uses a standard MMSegmentation base configuration. NPE modules are attached automatically at runtime.
 
 ### Basic Usage
 ```bash
@@ -57,9 +57,9 @@ python tools/train.py <base_config.py> [OPTIONS]
 Example:
 ```bash
 python tools/train.py \
-    configs/unet/unet_r50.py \
+    ../../configs/unet/unet_r50.py \
     --num-pem 2 \
-    --scale-factor 2 \
+    --scale-factor 1 \
     --work-dir work_dirs/unet_npe
 ```
 ### How NPE Integrates with MMSegmentation
@@ -75,7 +75,23 @@ The training script performs the following steps:
    4. Attaches one or more Prior Estimator Modules (PEMs).
    5. Adjusts optimization and scheduler settings if required.
 
-As a result, any segmentation model supported by can be used without modifying its config file.
+**Supported Base Heads**
+
+At present, the wrapper is compatible with the following [decode heads](https://github.com/open-mmlab/mmsegmentation/tree/main/mmseg/models/decode_heads):
+
+- `FCNHead`
+- `UPerHead`
+- `ASPPHead`
+- `DepthwiseSeparableASPPHead`
+- `PSPHead`
+- `DNLHead`
+- `NLHead`
+- `APCHead`
+- `ANNHead`
+- `SETRUPHead`
+- `EMAHead`
+
+Attempting to wrap unsupported heads may lead to runtime errors.
 
 #### Model Wrapping Mechanism
 
@@ -91,9 +107,6 @@ Backbone → MultiHeadWrapper
                      ↓
             Bias-adjusted segmentation logits
 ```
-The Prior Estimator learns feature-conditioned priors that adjust class predictions to improve performance under imbalance.
-Prior Estimator Module (PEM)
-
 Each PEM receives the same feature representation as the main decode head and produces a learned prior that modifies prediction logits.
 
 ### Command-Line Arguments
@@ -105,36 +118,31 @@ Each PEM receives the same feature representation as the main decode head and pr
 | `--work-dir` | str | Auto-generated | Directory for logs and checkpoints |
 | `--freeze-backbone` | flag | False | Freeze backbone parameters during training |
 | `--freeze-decode` | flag | False | Freeze original decode head (only NPE learns) |
-| `--num-pem` | int | 1 | Number of Prior Estimator heads |
+| `--num-pem` | int | 1 | Number of Prior Estimator Modules |
 | `--pem-type` | str | auto | Prior estimator type: `auto` or `FCNHead` |
 | `--scale-factor` | int | 1 | Scaling factor `s` for prior adjustment |
 | `--cfg-options` | key=value pairs | None | Override config parameters (same format as MMSegmentation) |
 
-#### PEM Type	Behavior
-auto	Uses the same architecture as the base decode head
-FCNHead	Uses a lightweight fully-connected segmentation head
+#### PEM Type Behavior
 
-Multiple PEMs can be attached simultaneously using --num-pem.
-#### Freezing Behavior
+| Value | Description |
+|---|---|
+| `auto` | Replicates architecture of the base decode head |
+| `FCNHead` | Lightweight fully-connected segmentation head |
 
-The framework supports controlled training regimes:
-Option	Effect
-`--freeze-backbone`	Backbone parameters are not updated
-`--freeze-decode`	Original decode head is frozen; only PEM learns
-`none`	Full model training
+Multiple PEMs can be attached simultaneously using `--num-pem`.
 
 ### Automatic Hyperparameter Setting
-If the dataset in the base config is ADE20K or STARE, training hyperparameters are automatically adjusted to match the settings used in the paper for reproducibility. No manual tuning is required.
-When the dataset type in the base config matches the following:
+To ensure reproducibility, training settings are automatically adjusted when specific datasets are detected in the base configuration.
 
-STARE
+- STARE:
 ```text
 max_iters = 600
 val_interval = 200
 LR decay milestones: [200, 400]
 ```
 
-ADE20K
+- ADE20K:
 ```text
 max_iters = 2500
 val_interval = 1250
@@ -167,4 +175,43 @@ If `--work-dir` is not specified, outputs are saved to:`./work_dirs/<base_config
 This directory contains:
 - training logs
 - checkpoints
+
+
+## Evaluation
+
+Model evaluation uses the trained work directory produced during training.  
+The test runner automatically loads:
+
+- the saved configuration
+- the latest checkpoint
+- model architecture with NPE modules
 - final model weights
+  
+### Basic Usage
+
+```bash
+python tools/test.py <train_work_dir>
+```
+Example:
+```bash
+python tools/test.py work_dirs/unet_npe
+```
+### Command-Line Arguments
+| Argument | Type | Default | Description |
+|---|---|---|---|
+| `train_work_dir` | str | — | Path to training work directory containing config and checkpoints |
+| `--scale-factor` | float | 1.0 | Override scaling factor of the NPE MultiHeadWrapper during evaluation |
+| `--tta` | flag | False | Enable test-time augmentation |
+| `--launcher` | str | none | Distributed launcher (`none`, `pytorch`, `slurm`, `mpi`) |
+| `--local-rank` | int | 0 | Local process rank for distributed evaluation |
+
+#### Test-Time Scaling
+
+#### Test-Time Scaling
+
+The `--scale-factor` argument overrides the scaling parameter of the NPE `MultiHeadWrapper` during evaluation.
+
+- Larger values of `--scale-factor` **reduce the effect** of the effect of logit adjusment effect.
+- This allows controlled analysis of adjustment strength without retraining.
+
+```

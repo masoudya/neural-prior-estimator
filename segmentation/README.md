@@ -213,6 +213,5 @@ The `--scale-factor` argument overrides the scaling parameter of the NPE `MultiH
 - Larger values of `--scale-factor` **reduce the effect** of the effect of logit adjusment effect.
 - This allows controlled analysis of adjustment strength without retraining.
 
-```
 
 

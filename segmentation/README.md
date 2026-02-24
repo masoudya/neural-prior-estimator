@@ -1,6 +1,7 @@
 # Semantic Segmentation with Neural Prior Estimator (NPE)
 
-This directory provides the semantic segmentation implementation of **Neural Prior Estimator (NPE)** built on top of MMSegmentation.
+This directory provides the semantic segmentation implementation of **Neural Prior Estimator (NPE)** built on top of 
+[MMSegmentation](https://github.com/open-mmlab/mmsegmentation/tree/main).
 NPE augments dense prediction models with learnable feature-conditioned class priors that adjust segmentation logits, improving performance under class imbalance.
 The implementation does not modify base model definitions. Instead, it wraps existing decode heads at runtime and injects prior estimation modules.
 
@@ -213,4 +214,5 @@ The `--scale-factor` argument overrides the scaling parameter of the NPE `MultiH
 - This allows controlled analysis of adjustment strength without retraining.
 
 ```
+
 
